@@ -11,6 +11,7 @@ import {
   SiRust,
   SiSolidity,
 } from "react-icons/si";
+import { likeUser, passUser } from "../axios/swipe";
 
 /* ── Skill → brand icon + color ──────────────────────────── */
 const SKILL_META = {
@@ -113,20 +114,42 @@ function ActionButton({ variant, onClick, children, wide }) {
 }
 
 /* ── Main card ────────────────────────────────────────────── */
-function DeveloperCard({ user }) {
-  const { firstName, headline, profilePhoto, skills = [] } = user;
+function DeveloperCard({ user, onNext }) {
+  const { _id, firstName, headline, profilePhoto, skills = [] } = user;
 
-  /* Drag physics */
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-220, 220], [-18, 18]);
   const cardOpac = useTransform(x, [-220, -120, 0, 120, 220], [0, 1, 1, 1, 0]);
 
-  /* Stamp opacities */
   const likeOpac = useTransform(x, [30, 110], [0, 1]);
   const passOpac = useTransform(x, [-110, -30], [1, 0]);
 
+  const handleLike = async () => {
+    try {
+      await likeUser(_id);
+
+      onNext();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handlePass = async () => {
+    try {
+      await passUser(_id);
+
+      onNext();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleDragEnd = (_, info) => {
-    // In a real app: call pass/like callbacks here
+    if (info.offset.x > 120) {
+      handleLike();
+    } else if (info.offset.x < -120) {
+      handlePass();
+    }
   };
 
   return (
@@ -272,11 +295,11 @@ function DeveloperCard({ user }) {
 
           {/* Action buttons */}
           <div className="flex items-center justify-between gap-3">
-            <ActionButton variant="pass" onClick={() => {}}>
+            <ActionButton variant="pass" onClick={handlePass}>
               <HiXMark style={{ fontSize: "20px" }} />
             </ActionButton>
 
-            <ActionButton variant="connect" onClick={() => {}} wide>
+            <ActionButton variant="connect" onClick={handleLike} wide>
               <HiHeart style={{ fontSize: "16px" }} />
               Connect
             </ActionButton>

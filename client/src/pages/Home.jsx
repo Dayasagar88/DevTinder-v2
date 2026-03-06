@@ -1,13 +1,28 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import DeveloperCard from "../components/DeveloperCard";
+import { getFeed } from "../axios/users";
 
 function Home() {
-  const dummyUser = {
-    firstName: "Sagar",
-    headline: "Full Stack Developer",
-    profilePhoto: "https://i.pravatar.cc/150",
-    skills: ["React", "Node", "MongoDB"],
-  };
+  const [users, setUsers] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchFeed = async () => {
+      try {
+        const res = await getFeed();
+        console.log(res.data);
+
+        setUsers(res.data.users);
+      } catch (error) {
+        console.log(error.response?.data);
+      }
+    };
+
+    fetchFeed();
+  }, []);
+
+  const currentUser = users[currentIndex];
 
   return (
     <div
@@ -21,22 +36,25 @@ function Home() {
         .float-card { animation: float-card 6s ease-in-out infinite; }
       `}</style>
 
-      {/* Background glow behind card */}
+      {/* Background glow */}
+
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
         <div
           className="w-80 h-80 rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)",
             filter: "blur(60px)",
           }}
         />
       </div>
 
-      {/* Header label */}
+      {/* Header */}
+
       <motion.div
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.45 }}
         className="flex items-center gap-2 mb-6 z-10"
       >
         <div
@@ -49,39 +67,34 @@ function Home() {
         >
           <span
             className="w-1.5 h-1.5 rounded-full"
-            style={{ background: "#a78bfa", boxShadow: "0 0 6px #a78bfa" }}
+            style={{
+              background: "#a78bfa",
+              boxShadow: "0 0 6px #a78bfa",
+            }}
           />
-          1 developer nearby
+          {users.length} developers nearby
         </div>
       </motion.div>
 
-      {/* Card wrapper */}
-      <motion.div
-        initial={{ opacity: 0, y: 32, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-        className="relative z-10 float-card"
-      >
-        {/* Ghost cards behind for depth */}
-        <div
-          className="absolute inset-0 rounded-3xl -rotate-3 scale-95 translate-y-2"
-          style={{
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.05)",
-          }}
-        />
-        <div
-          className="absolute inset-0 rounded-3xl rotate-2 scale-97 translate-y-1"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-        />
-        {/* Actual card */}
-        <DeveloperCard user={dummyUser} />
-      </motion.div>
+      {/* Card */}
 
-      {/* Hint text */}
+      {currentUser && (
+        <motion.div
+          key={currentUser._id}
+          initial={{ opacity: 0, y: 32, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 float-card"
+        >
+          <DeveloperCard
+            user={currentUser}
+            onNext={() => setCurrentIndex((prev) => prev + 1)}
+          />
+        </motion.div>
+      )}
+
+      {/* Hint */}
+
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
