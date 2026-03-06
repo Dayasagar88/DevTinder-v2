@@ -1,44 +1,35 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { HiSparkles } from "react-icons/hi2";
 import { RiHome4Line, RiHome4Fill } from "react-icons/ri";
 import { TbHeartHandshake } from "react-icons/tb";
-import { HiOutlineUser, HiUser } from "react-icons/hi2";
+import { HiOutlineUser, HiUser, HiArrowRightOnRectangle } from "react-icons/hi2";
 import api from "../axios/axios";
 
 const navLinks = [
-  {
-    to: "/app",
-    label: "Feed",
-    icon: RiHome4Line,
-    activeIcon: RiHome4Fill,
-  },
-  {
-    to: "/app/matches",
-    label: "Matches",
-    icon: TbHeartHandshake,
-    activeIcon: TbHeartHandshake,
-  },
-  {
-    to: "/app/profile",
-    label: "Profile",
-    icon: HiOutlineUser,
-    activeIcon: HiUser,
-  },
+  { to: "/app",          label: "Feed",    icon: RiHome4Line,    activeIcon: RiHome4Fill    },
+  { to: "/app/matches",  label: "Matches", icon: TbHeartHandshake, activeIcon: TbHeartHandshake },
+  { to: "/app/profile",  label: "Profile", icon: HiOutlineUser,  activeIcon: HiUser         },
 ];
 
 function Navbar() {
-  const location = useLocation();
-  const navigate = useNavigate()
+  const location  = useLocation();
+  const navigate  = useNavigate();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
     try {
-        const res = await api.post("/auth/logout") 
-        console.log(res.data) 
-        navigate("/") 
+      const res = await api.post("/auth/logout");
+      console.log(res.data);
+      navigate("/");
     } catch (error) {
-        console.error("Logout failed:", error);}
-  }
+      console.error("Logout failed:", error);
+      setLoggingOut(false);
+    }
+  };
 
   return (
     <motion.nav
@@ -56,10 +47,10 @@ function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center">
 
-        {/* Logo */}
+        {/* ── Logo ── */}
         <Link to="/" className="flex items-center gap-2 group select-none">
           <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center relative overflow-hidden transition-transform duration-300 group-hover:scale-110"
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
             style={{
               background: "linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #0d9488 100%)",
               boxShadow: "0 0 16px rgba(124,58,237,0.5)",
@@ -80,7 +71,7 @@ function Navbar() {
           </span>
         </Link>
 
-        {/* Navigation links */}
+        {/* ── Nav links ── */}
         <div className="flex items-center gap-1">
           {navLinks.map(({ to, label, icon: Icon, activeIcon: ActiveIcon }) => {
             const isActive =
@@ -94,45 +85,31 @@ function Navbar() {
                 key={to}
                 to={to}
                 className="relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 group"
-                style={{
-                  color: isActive ? "#e2e8f0" : "rgba(148,163,184,0.8)",
-                }}
+                style={{ color: isActive ? "#e2e8f0" : "rgba(148,163,184,0.8)" }}
               >
-                {/* Active background pill */}
                 {isActive && (
                   <motion.div
                     layoutId="navbar-active-pill"
                     className="absolute inset-0 rounded-xl"
                     style={{
-                      background:
-                        "linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(79,70,229,0.15) 100%)",
+                      background: "linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(79,70,229,0.15) 100%)",
                       border: "1px solid rgba(124,58,237,0.3)",
                       boxShadow: "0 0 12px rgba(124,58,237,0.15)",
                     }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
                   />
                 )}
-
-                {/* Hover background */}
                 {!isActive && (
                   <span
                     className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    style={{
-                      background: "rgba(255,255,255,0.04)",
-                    }}
+                    style={{ background: "rgba(255,255,255,0.04)" }}
                   />
                 )}
-
                 <IconComponent
                   className="relative z-10 transition-transform duration-200 group-hover:scale-110"
-                  style={{
-                    fontSize: "16px",
-                    color: isActive ? "#a5b4fc" : undefined,
-                  }}
+                  style={{ fontSize: "16px", color: isActive ? "#a5b4fc" : undefined }}
                 />
                 <span className="relative z-10 hidden sm:inline">{label}</span>
-
-                {/* Active dot indicator */}
                 {isActive && (
                   <motion.span
                     layoutId="navbar-dot"
@@ -144,9 +121,65 @@ function Navbar() {
             );
           })}
         </div>
-        <button className="text-amber-50" onClick={handleLogout}>
-            logout
-        </button>
+
+        {/* ── Logout button ── */}
+        <motion.button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          whileHover={!loggingOut ? { scale: 1.04 } : {}}
+          whileTap={!loggingOut  ? { scale: 0.96 } : {}}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            color: loggingOut ? "rgba(100,116,139,0.5)" : "rgba(148,163,184,0.8)",
+            cursor: loggingOut ? "not-allowed" : "pointer",
+          }}
+          onMouseEnter={e => {
+            if (!loggingOut) {
+              e.currentTarget.style.background   = "rgba(225,29,72,0.1)";
+              e.currentTarget.style.borderColor  = "rgba(225,29,72,0.3)";
+              e.currentTarget.style.color        = "#fb7185";
+            }
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background  = "rgba(255,255,255,0.04)";
+            e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+            e.currentTarget.style.color       = "rgba(148,163,184,0.8)";
+          }}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {loggingOut ? (
+              <motion.span
+                key="spinning"
+                initial={{ opacity: 0, rotate: -90 }}
+                animate={{ opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center gap-2"
+              >
+                <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+                <span className="hidden sm:inline">Logging out…</span>
+              </motion.span>
+            ) : (
+              <motion.span
+                key="idle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="flex items-center gap-2"
+              >
+                <HiArrowRightOnRectangle className="text-base" />
+                <span className="hidden sm:inline">Logout</span>
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </motion.button>
+
       </div>
 
       {/* Bottom shimmer line */}

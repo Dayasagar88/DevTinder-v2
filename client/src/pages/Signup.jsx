@@ -62,8 +62,11 @@ function Signup() {
     setError("");
     try {
       const res = await api.post("/auth/signup", form);
-      console.log(res.data);
-      navigate("/app");
+      if (res.data.user.isProfileComplete === false) {
+        navigate("/complete-profile");
+      } else {
+        navigate("/app");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message ||

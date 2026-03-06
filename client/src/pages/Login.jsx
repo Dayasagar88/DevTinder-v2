@@ -7,7 +7,6 @@ import { FcGoogle } from "react-icons/fc";
 import { BsShieldCheck } from "react-icons/bs";
 import api from "../axios/axios";
 
-
 function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
@@ -27,8 +26,11 @@ function Login() {
     setError("");
     try {
       const res = await api.post("/auth/login", form);
-      console.log(res.data);
-      navigate("/app");
+      if (res.data.user.isProfileComplete === false) {
+        navigate("/complete-profile");
+      } else {
+        navigate("/app");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message || "Invalid email or password. Try again.",

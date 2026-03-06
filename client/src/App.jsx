@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Matches from "./pages/Matches";
 import Landing from "./pages/Landing";
 import MainLayout from "./layouts/MainLayouts";
+import CompleteProfile from "./pages/CompleteProfile";
 
 function App() {
 
@@ -26,6 +27,7 @@ function App() {
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/complete-profile" element={<CompleteProfile />} />
 
         {/* App Layout */}
         <Route path="/app" element={<MainLayout />}>

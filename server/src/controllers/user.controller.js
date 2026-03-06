@@ -39,7 +39,6 @@ export const getFeed = async (req, res) => {
       _id: { $ne: loggedInUser._id }
     })
     .select("-password")
-    .limit(10)
 
     res.json({
       success: true,
@@ -106,6 +105,78 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Profile update failed"
+    })
+
+  }
+
+}
+
+export const completeProfile = async (req,res) => {
+
+  try {
+
+    const userId = req.user._id
+
+    const {
+      headline,
+      bio,
+      location,
+      skills,
+      techStack,
+      experienceLevel,
+      yearsOfExperience,
+      portfolioUrl
+    } = req.body
+
+    if(
+      !headline ||
+      !bio ||
+      !location ||
+      !skills ||
+      !techStack ||
+      !experienceLevel ||
+      !yearsOfExperience
+    ){
+      return res.status(400).json({
+        success:false,
+        message:"Please complete all required fields"
+      })
+    }
+
+    let profilePhoto = ""
+
+    if(req.file){
+      profilePhoto = `/uploads/${req.file.filename}`
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        headline,
+        bio,
+        location,
+        skills: JSON.parse(skills),
+        techStack: JSON.parse(techStack),
+        experienceLevel,
+        yearsOfExperience,
+        portfolioUrl,
+        ...(profilePhoto && {profilePhoto}),
+        isProfileComplete:true
+      },
+      {new:true}
+    ).select("-password")
+
+    res.status(200).json({
+      success:true,
+      message:"Profile completed successfully",
+      user:updatedUser
+    })
+
+  } catch (error) {
+
+    res.status(500).json({
+      success:false,
+      message:"Failed to complete profile"
     })
 
   }

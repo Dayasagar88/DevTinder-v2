@@ -26,7 +26,7 @@ function Home() {
 
   return (
     <div
-      className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center relative px-4 py-8"
+      className="min-h-[calc(100vh-6rem)] flex flex-col items-center justify-center relative px-4 py-8"
       style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
       <style>{`
