@@ -26,6 +26,7 @@ function Login() {
     setError("");
     try {
       const res = await api.post("/auth/login", form);
+      console.log(res.data.user)
       if (res.data.user.isProfileComplete === false) {
         navigate("/complete-profile");
       } else {

@@ -1,3 +1,4 @@
+import Swipe from "../models/swipe.model.js"
 import User from "../models/user.model.js"
 
 export const getProfile = async (req, res) => {
@@ -35,10 +36,29 @@ export const getFeed = async (req, res) => {
 
     const loggedInUser = req.user
 
-    const users = await User.find({
-      _id: { $ne: loggedInUser._id }
-    })
-    .select("-password")
+    const swipedUsers = await Swipe.find({
+      fromUserId: loggedInUser._id
+    }).select("toUserId")
+
+    const swipedUserIds = swipedUsers.map(s => s.toUserId)
+
+    const users = await User.aggregate([
+      {
+        $match: {
+          _id: {
+            $nin: [...swipedUserIds, loggedInUser._id]
+          }
+        }
+      },
+      {
+        $sample: { size: 20 }
+      },
+      {
+        $project: {
+          password: 0
+        }
+      }
+    ])
 
     res.json({
       success: true,
@@ -91,7 +111,7 @@ export const updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       updates,
-      { new: true, runValidators: true }
+      { returnDocument: "after" , runValidators: true }
     ).select("-password")
 
     res.status(200).json({
@@ -101,7 +121,7 @@ export const updateProfile = async (req, res) => {
     })
 
   } catch (error) {
-
+    console.log(error)
     res.status(500).json({
       success: false,
       message: "Profile update failed"
@@ -125,6 +145,7 @@ export const completeProfile = async (req,res) => {
       techStack,
       experienceLevel,
       yearsOfExperience,
+      lookingFor,
       portfolioUrl
     } = req.body
 
@@ -135,7 +156,8 @@ export const completeProfile = async (req,res) => {
       !skills ||
       !techStack ||
       !experienceLevel ||
-      !yearsOfExperience
+      !yearsOfExperience ||
+      !lookingFor
     ){
       return res.status(400).json({
         success:false,
@@ -159,6 +181,7 @@ export const completeProfile = async (req,res) => {
         techStack: JSON.parse(techStack),
         experienceLevel,
         yearsOfExperience,
+        lookingFor: JSON.parse(lookingFor),
         portfolioUrl,
         ...(profilePhoto && {profilePhoto}),
         isProfileComplete:true
@@ -173,6 +196,7 @@ export const completeProfile = async (req,res) => {
     })
 
   } catch (error) {
+    console.log(error)
 
     res.status(500).json({
       success:false,
