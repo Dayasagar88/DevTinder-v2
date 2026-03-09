@@ -26,7 +26,7 @@ function Login() {
     setError("");
     try {
       const res = await api.post("/auth/login", form);
-      console.log(res.data.user)
+      console.log(res.data.user);
       if (res.data.user.isProfileComplete === false) {
         navigate("/complete-profile");
       } else {
@@ -180,6 +180,9 @@ function Login() {
             </motion.button>
 
             <motion.button
+              onClick={() =>
+                (window.location.href = "http://localhost:5000/api/github-auth/github")
+              }
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="button"

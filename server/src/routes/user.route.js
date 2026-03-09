@@ -1,6 +1,6 @@
 import express from "express";
 import authMiddleware from "../middlewares/auth.middleware.js";
-import { completeProfile, getFeed, getProfile, updateProfile } from "../controllers/user.controller.js";
+import { completeProfile, getFeed, getProfile, getUserStats, updateProfile } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/upload.middleware.js";
 
 const userRouter = express.Router();
@@ -15,4 +15,6 @@ userRouter.post(
   upload.single("profilePhoto"),
   completeProfile
 )
+
+userRouter.get("/stats", authMiddleware, getUserStats);
 export default userRouter;

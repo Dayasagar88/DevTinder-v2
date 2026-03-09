@@ -12,8 +12,12 @@ import userRouter from "./src/routes/user.route.js"
 import swipeRouter from "./src/routes/swipe.routes.js"
 import matchRouter from "./src/routes/match.routes.js"
 import messageRouter from "./src/routes/message.routes.js"
-
+// import githubRouter from "./src/routes/githubAuth.js"
 dotenv.config()
+// import "./src/config/passport.js"
+// import passport from "passport"
+
+// app.use(passport.initialize())
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -43,6 +47,7 @@ app.use("/api/user", userRouter)
 app.use("/api/swipe", swipeRouter)
 app.use("/api/matches", matchRouter)
 app.use("/api/messages", messageRouter)
+// app.use("/api/github-auth", githubRouter)
 
 /* Start Server */
 

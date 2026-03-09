@@ -14,6 +14,17 @@ const userSchema = new mongoose.Schema(
     type: String,
     trim: true
   },
+  githubId: {
+  type: String,
+  unique: true,
+  sparse: true
+},
+
+authProvider: {
+  type: String,
+  enum: ["local", "github"],
+  default: "local"
+},
 
   email: {
     type: String,
@@ -26,7 +37,6 @@ const userSchema = new mongoose.Schema(
 
   password: {
     type: String,
-    required: true,
     select: false
   },
 
