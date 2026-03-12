@@ -359,7 +359,8 @@ function CompleteProfile() {
       data.append("portfolioUrl", form.portfolioUrl);
       if (photo) data.append("profilePhoto", photo);
 
-      await api.post("/user/complete-profile", data);
+      const res = await api.post("/user/complete-profile", data);
+      console.log(res.data)
       setSuccess(true);
       setTimeout(() => navigate("/app"), 900);
     } catch (err) {

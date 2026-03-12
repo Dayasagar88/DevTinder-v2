@@ -29,16 +29,16 @@ app.use(cookieParser())
 
 app.use(
   cors({
-    origin: "https://dev-tinder-v2.vercel.app/",
+    origin: "https://dev-tinder-v2.vercel.app/" || "http://localhost:5173/",
     credentials: true
   })
 )
 
 /* Test Route */
 
-app.get("/", (req, res) => {
-  res.send("DevTinder V2 Backend Running")
-})
+// app.get("/", (req, res) => {
+//   res.send("DevTinder V2 Backend Running")
+// })
 
 /* API Routes */
 
