@@ -3,11 +3,11 @@ import {getAuth, GoogleAuthProvider} from "firebase/auth"
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API,
-  authDomain: "devtinderv2.firebaseapp.com",
-  projectId: "devtinderv2",
-  storageBucket: "devtinderv2.firebasestorage.app",
-  messagingSenderId: "704224197136",
-  appId: "1:704224197136:web:c28592eb246cd290e8a895"
+  authDomain: "devtinderv2-f52d3.firebaseapp.com",
+  projectId: "devtinderv2-f52d3",
+  storageBucket: "devtinderv2-f52d3.firebasestorage.app",
+  messagingSenderId: "97470768805",
+  appId: "1:97470768805:web:2bd36b2be4a27cc8144f4c"
 };
 
 // Initialize Firebase
