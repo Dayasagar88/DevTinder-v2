@@ -85,6 +85,8 @@ export const loginUser = async (req, res) => {
 
   } catch (error) {
 
+    console.log(error)
+
     res.status(500).json({
       message: error.message
     })
@@ -96,7 +98,11 @@ export const loginUser = async (req, res) => {
 // @desc    User Logout
 export const logoutUser = (req, res) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
 
     res.json({
       success: true,
@@ -130,7 +136,7 @@ export const googleAuth = async (req, res) => {
       });
     }
 
-    const token = await genToken(user._id);
+    const token = await user.generateJWT();
 
     res.cookie("token", token, {
       httpOnly: true,
