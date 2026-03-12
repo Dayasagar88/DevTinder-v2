@@ -6,6 +6,8 @@ import { TbBrandGithub, TbUser, TbMail, TbLock } from "react-icons/tb";
 import { FcGoogle } from "react-icons/fc";
 import { BsShieldCheck } from "react-icons/bs";
 import api from "../axios/axios";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../utils/firebase";
 
 const inputFields = [
   {
@@ -67,6 +69,41 @@ function Signup() {
       } else {
         navigate("/app");
       }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Something went wrong. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const result = await signInWithPopup(auth, provider);
+
+      const user = result.user;
+
+      const res = await api.post(
+        "/auth/google",
+        {
+          name: user.displayName,
+          email: user.email,
+          photo: user.photoURL,
+        },
+        { withCredentials: true },
+      );
+      if (res.data.user.isProfileComplete === false) {
+        navigate("/complete-profile");
+      } else {
+        navigate("/app");
+      }
+
+      console.log(res.data);
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -177,6 +214,7 @@ function Signup() {
           <div className="flex flex-col gap-2.5 mb-6">
             {/* Google */}
             <motion.button
+              onClick={(e) => handleGoogleAuth(e)}
               whileHover={{
                 scale: 1.02,
                 backgroundColor: "rgba(255,255,255,0.07)",
@@ -195,7 +233,7 @@ function Signup() {
             </motion.button>
 
             {/* GitHub */}
-            <motion.button
+            {/* <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="button"
@@ -219,7 +257,7 @@ function Signup() {
                 style={{ color: "#94a3b8" }}
               />
               Continue with GitHub
-            </motion.button>
+            </motion.button> */}
           </div>
 
           {/* Divider */}

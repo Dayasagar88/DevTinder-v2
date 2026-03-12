@@ -12,3 +12,4 @@ export const getFeed = () => {
 export const getUserStats = () => {
   return api.get("/user/stats")
 }
+
